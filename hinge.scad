@@ -13,6 +13,7 @@ module hinge(
 )
 {
     model_r_max = pin_radius + pin_clearance + knuckle_thk;
+    max_height = pin_height + (2 * pin_extend);
 
     module __hinge_body()
     {
@@ -20,7 +21,7 @@ module hinge(
         {
             translate([0, 0, -pin_extend])
                 cylinder(
-                    h = pin_height + (2 * pin_extend),
+                    h = max_height,
                     r = pin_radius,
                     center = false
                 );
@@ -65,8 +66,8 @@ module hinge(
         {
             __hinge_body();
 
-            translate([0, -(model_r_max + 1), -1])
-                cube([model_r_max + 1, (model_r_max + 1) * 2, pin_height + 2], center = false);
+            translate([0, -(model_r_max + 1), -pin_extend])
+                cube([model_r_max + 1, (model_r_max + 1) * 2, max_height], center = false);
         }
     }
     else if (section_mode == "slice")
