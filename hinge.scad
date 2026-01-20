@@ -84,6 +84,22 @@ module hinge(
                 tab_len
             );
         }
+        
+        if (show_leaf_right == true)
+        {
+            __draw_leaf_right(
+                pin_height,
+                pin_radius,
+                pin_clearance,
+                knuckle_thk,
+                nknuckles,
+                knuckle_z_gap,
+                leaf_len,
+                leaf_thk,
+                leaf_gap,
+                tab_len
+            ); 
+        }
     }
     
     module __draw_hinge_pin(
@@ -134,16 +150,16 @@ module hinge(
     }
     
     module __draw_leaf_left(
-    pin_height,
-    pin_radius,
-    pin_clearance,
-    knuckle_thk,
-    nknuckles,
-    knuckle_z_gap,
-    leaf_len,
-    leaf_thk,
-    leaf_gap,
-    tab_len
+        pin_height,
+        pin_radius,
+        pin_clearance,
+        knuckle_thk,
+        nknuckles,
+        knuckle_z_gap,
+        leaf_len,
+        leaf_thk,
+        leaf_gap,
+        tab_len
     )
     {
         outer_r   = pin_radius + pin_clearance + knuckle_thk;
@@ -183,6 +199,59 @@ module hinge(
         translate([tab_x0, -leaf_thk / 2, z0])
             cube([tab_x1 - tab_x0, leaf_thk, knuckle_h], center = false);
     }
+    
+    module __draw_leaf_right(
+        pin_height,
+        pin_radius,
+        pin_clearance,
+        knuckle_thk,
+        nknuckles,
+        knuckle_z_gap,
+        leaf_len,
+        leaf_thk,
+        leaf_gap,
+        tab_len
+    )
+    {
+        outer_r   = pin_radius + pin_clearance + knuckle_thk;
+        knuckle_h = __knuckle_h(pin_height, nknuckles, knuckle_z_gap);
+        
+        union()
+        {
+            __draw_leaf_right_plate(outer_r, pin_height, leaf_len, leaf_thk, leaf_gap);
+        
+            for (i = [1 : 2 : nknuckles - 1])   // 1,3,5,...
+            {
+                z0 = i * (knuckle_h + knuckle_z_gap);
+        
+                __draw_leaf_right_tab(
+                    outer_r,
+                    leaf_gap,
+                    tab_len,
+                    leaf_thk,
+                    z0,
+                    knuckle_h
+                );
+            }
+        }
+    }
+
+    module __draw_leaf_right_tab(outer_r, leaf_gap, tab_len, leaf_thk, z0, knuckle_h, eps = 0.2)
+    {
+        tab_x0 = -(outer_r + leaf_gap + tab_len + eps);
+        tab_x1 = -(outer_r - eps);
+        
+    translate([tab_x0, -leaf_thk / 2, z0])
+        cube([tab_x1 - tab_x0, leaf_thk, knuckle_h], center = false);
+    }
+
+    
+    module __draw_leaf_right_plate(outer_r, pin_height, leaf_len, leaf_thk, leaf_gap)
+    {
+        translate([-(outer_r + leaf_gap + leaf_len), -leaf_thk / 2, 0])
+            cube([leaf_len, leaf_thk, pin_height], center = false);
+    }
+
     
     module __section_half_cut(
         model_r_max, 
